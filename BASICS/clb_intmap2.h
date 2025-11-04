@@ -41,7 +41,6 @@ typedef enum
 {
    IMEmpty,
    IMSingle,
-   IMArray,
    IMTree
 }IntMapType;
 
@@ -87,7 +86,6 @@ typedef struct intmap_iter_cell
    union
    {
       bool      seen;      /* For IMSingle */
-      long      current;   /* For IMArray  */
       PStack_p  tree_iter; /* For IMTree */
    }admin_data;
 }IntMapIterCell, *IntMapIter_p;
@@ -120,9 +118,7 @@ void*    IntMapDelKey(IntMap_p map, long key);
 #define INTMAPCELL_MEM MEMSIZE(IntMapCell)
 #endif
 
-#define IntMapDStorage(map) (((map)->type == IMArray)?\
-                             PDArrayStorage((map)->values.array):\
-                             (((map)->type == IMTree)?\
+#define IntMapDStorage(map) ((((map)->type == IMTree)?\
                               ((map)->entry_no*NUMTREECELL_MEM):0))
 
 #define IntMapStorage(map) (INTMAPCELL_MEM+IntMapDStorage(map))
@@ -182,19 +178,6 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
             *key = iter->map->max_key;
             res = iter->map->values.value;
          }
-         break;
-   case IMArray:
-         // printf("Case IMArray %ld\n", iter->admin_data.current);
-         for(i=iter->admin_data.current; i<= iter->upper_key; i++)
-         {
-            res = PDRangeArrElementP(iter->map->values.array, i);
-            if(res)
-            {
-               *key = i;
-               break;
-            }
-         }
-         iter->admin_data.current = i+1;
          break;
    case IMTree:
          // printf("Case IMTree\n");
