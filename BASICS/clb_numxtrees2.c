@@ -138,7 +138,7 @@ static NumXTree_p splay_tree(NumXTree_p tree, long key)
 //
 /----------------------------------------------------------------------*/
 
-static NumXTree_p node_empty(NumXTree_p node)
+static bool node_empty(NumXTree_p node)
 {
    for(int i = 0; i < NUMXTREEVALUES; i++) 
    {
@@ -655,6 +655,22 @@ NumXTree_p NumXTreeTraverseNext(PStack_p state)
       return NULL;
    }
    res = PStackPopP(state);
+
+   for(int i = 0; i < NUMXTREEVALUES; i++) 
+   {
+      if(res->vals[i % NUMXTREEVALUES].p_val) 
+      {
+         handle = res;
+         handle->vals[i % NUMXTREEVALUES].p_val = NULL;
+         if (!node_empty(handle))
+         {
+            PStackPushP(state, handle); // TODO: Optimize
+            return res;
+         }
+         break;
+      }
+   }
+
    handle = res->rson;
    while(handle)
    {
