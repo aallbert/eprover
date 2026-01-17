@@ -28,8 +28,7 @@ Changes
 #define CLB_INTMAP
 
 #include <limits.h>
-#include <clb_numtrees.h>
-#include <clb_numxtrees.h>
+#include <clb_numxtrees2.h>
 #include <clb_pdrangearrays.h>
 
 
@@ -119,7 +118,7 @@ void*    IntMapDelKey(IntMap_p map, long key);
 #endif
 
 #define IntMapDStorage(map) ((((map)->type == IMTree)?\
-                              ((map)->entry_no*NUMTREECELL_MEM):0))
+                              ((map)->entry_no*NUMXTREECELL_MEM):0))
 
 #define IntMapStorage(map) (INTMAPCELL_MEM+IntMapDStorage(map))
 
@@ -155,7 +154,7 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
 {
    void* res = NULL;
    long  i;
-   NumTree_p handle;
+   NumXTree_p handle;
 
    assert(iter);
    assert(key);
@@ -181,7 +180,7 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
          break;
    case IMTree:
          // printf("Case IMTree\n");
-         while((handle = NumTreeTraverseNext(iter->admin_data.tree_iter)))
+         while((handle = NumXTreeTraverseNext(iter->admin_data.tree_iter)))
          {
             if(handle)
             {
@@ -190,12 +189,15 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
                   /* Overrun limit */
                   break;
                }
-               if(handle->val1.p_val)
+               for(int i = 0; i < NUMXTREEVALUES; i++) 
                {
-                  /* Found real value */
-                  *key = handle->key;
-                  res = handle->val1.p_val;
-                  break;
+                  if(handle->vals[i % NUMXTREEVALUES].p_val) 
+                  {
+                     /* Found real value */
+                     *key = handle->key + i;
+                     res = handle->vals[i % NUMXTREEVALUES].p_val;
+                     break;
+                  }
                }
             }
          }
