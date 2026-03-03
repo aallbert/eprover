@@ -22,12 +22,29 @@ Changes
 
 -----------------------------------------------------------------------*/
 
+// #define NumXTreeTraverseNext          NumXTree2TraverseNext
+// #define NumXTreeFind                  NumXTree2Find
+// #define NumXTreeCellAllocEmpty        NumXTree2CellAllocEmpty
+// #define NumXTreeFree                  NumXTree2Free
+// #define NumXTreeInsertNode            NumXTree2InsertNode
+// #define NumXTreeStoreNode             NumXTree2StoreNode
+// #define NumXTreeFind                  NumXTree2Find
+// #define NumXTreeExtractValue          NumXTree2ExtractValue
+// #define NumXTreeExtractRoot           NumXTree2ExtractRoot
+// #define NumXTreeDeleteEntry           NumXTree2DeleteEntry
+// #define NumXTreeNodes                 NumXTree2Nodes
+// #define NumXTreeMaxNode               NumXTree2MaxNode
+// #define NumXTreeMaxKey                NumXTree2MaxKey
+// #define NumXTreeLimitedTraverseInit   NumXTree2LimitedTraverseInit
+// #define NumXTreeTraverseExit          NumXTree2TraverseExit
+
 #ifndef CLB_NUMXTREES
 
 #define CLB_NUMXTREES
 
 #include <clb_dstrings.h>
 #include <clb_avlgeneric.h>
+#include <clb_pstacks.h>
 
 /*---------------------------------------------------------------------*/
 /*                    Data type declarations                           */
@@ -65,23 +82,25 @@ typedef struct numxtreecell
 #define NUMXTREECELL_MEM MEMSIZE(NumXTreeCell)
 #endif
 
-NumXTree_p NumXTreeCellAllocEmpty(void);
-void      NumXTreeFree(NumXTree_p junk);
-NumXTree_p NumXTreeInsertNode(NumXTree_p *root, NumXTree_p newnode);
-bool       NumXTreeStoreNode(NumXTree_p *root, long key, IntOrP val);
-NumXTree_p NumXTreeFind(NumXTree_p *root, long key);
-NumXTree_p NumXTreeExtractValue(NumXTree_p *root, long key);
-NumXTree_p NumXTreeExtractRoot(NumXTree_p *root);
-bool      NumXTreeDeleteEntry(NumXTree_p *root, long key);
-long      NumXTreeNodes(NumXTree_p root);
-NumXTree_p NumXTreeMaxNode(NumXTree_p root);
-#define   NumXTreeMaxKey(tree) (NumXTreeMaxNode(tree)->key)
+// TODO: remove the '2' eventually
 
-PStack_p NumXTreeLimitedTraverseInit(NumXTree_p root, long limit);
+NumXTree_p NumXTree2CellAllocEmpty(void);
+void      NumXTree2Free(NumXTree_p junk);
+NumXTree_p NumXTree2InsertNode(NumXTree_p *root, NumXTree_p newnode);
+bool       NumXTree2StoreNode(NumXTree_p *root, long key, IntOrP val);
+NumXTree_p NumXTree2Find(NumXTree_p *root, long key);
+NumXTree_p NumXTree2ExtractValue(NumXTree_p *root, long key);
+NumXTree_p NumXTree2ExtractRoot(NumXTree_p *root);
+bool      NumXTree2DeleteEntry(NumXTree_p *root, long key);
+long      NumXTree2Nodes(NumXTree_p root);
+NumXTree_p NumXTree2MaxNode(NumXTree_p root);
+long      NumXTree2MaxKey(NumXTree_p node);
 
-NumXTree_p NumXTreeTraverseNext(PStack_p state);
+PStack_p NumXTree2LimitedTraverseInit(NumXTree_p root, long limit);
+
+NumXTree_p NumXTree2TraverseNext(PStack_p state);
 // AVL_TRAVERSE_DECLARATION(NumXTree, NumXTree_p)
-#define NumXTreeTraverseExit(stack) PStackFree(stack)
+#define NumXTree2TraverseExit(stack) PStackFree(stack)
 
 
 #endif

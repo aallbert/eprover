@@ -31,6 +31,21 @@ Changes
 #include <clb_numxtrees2.h>
 #include <clb_pdrangearrays.h>
 
+#define NumXTreeTraverseNext          NumXTree2TraverseNext
+#define NumXTreeFind                  NumXTree2Find
+#define NumXTreeCellAllocEmpty        NumXTree2CellAllocEmpty
+#define NumXTreeFree                  NumXTree2Free
+#define NumXTreeInsertNode            NumXTree2InsertNode
+#define NumXTreeStoreNode             NumXTree2StoreNode
+#define NumXTreeExtractValue          NumXTree2ExtractValue
+#define NumXTreeExtractRoot           NumXTree2ExtractRoot
+#define NumXTreeDeleteEntry           NumXTree2DeleteEntry
+#define NumXTreeNodes                 NumXTree2Nodes
+#define NumXTreeMaxNode               NumXTree2MaxNode
+#define NumXTreeMaxKey                NumXTree2MaxKey
+#define NumXTreeLimitedTraverseInit   NumXTree2LimitedTraverseInit
+#define NumXTreeTraverseExit          NumXTree2TraverseExit
+
 
 /*---------------------------------------------------------------------*/
 /*                    Data type declarations                           */
@@ -153,7 +168,6 @@ void     IntMapDebugPrint(FILE* out, IntMap_p map);
 static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
 {
    void* res = NULL;
-   long  i;
    NumXTree_p handle;
 
    assert(iter);
@@ -164,7 +178,6 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
       return NULL;
    }
 
-   //printf("IntMapIterNext()...\n");
    switch(iter->map->type)
    {
    case IMEmpty:
@@ -191,12 +204,13 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
                }
                for(int i = 0; i < NUMXTREEVALUES; i++) 
                {
-                  if(handle->vals[i % NUMXTREEVALUES].p_val) 
+                  if(handle->vals[i].p_val) 
                   {
-                     /* Found real value */
+                     /* Found real value, diminish it in stack */
                      *key = handle->key + i;
-                     res = handle->vals[i % NUMXTREEVALUES].p_val;
-                     break;
+                     res = handle->vals[i].p_val;
+                     handle->vals[i].p_val = NULL;
+                     return res;
                   }
                }
             }
