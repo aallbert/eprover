@@ -238,7 +238,7 @@ bool NumXTreeNodeEmpty(NumXTree_p node)
 
 /*-----------------------------------------------------------------------
 //
-// Function: NumXTreeNodeWouldBeEmpty()
+// Function: NumXTreeNodeSingleElement()
 //
 //   Return true if the elements of node->vals of node would be NULL
 //   After removing the element at index
@@ -249,7 +249,7 @@ bool NumXTreeNodeEmpty(NumXTree_p node)
 //
 /----------------------------------------------------------------------*/
 
-bool NumXTreeNodeWouldBeEmpty(NumXTree_p node, int index)
+bool NumXTreeNodeSingleElement(NumXTree_p node, int index)
 {
    for(int i=0; i < NUMXTREEVALUES; i++)
    {
@@ -346,6 +346,13 @@ NumXTree_p NumXTreeInsertKeyValPair(NumXTree_p *root, long key, void* val)
    newnode->key = nodekey;
    newnode->vals[index].p_val = val;
 
+   if (!*root)
+   {
+      newnode->lson = newnode->rson = NULL;
+      *root = newnode;
+      return *root;
+   }
+
    *root = splay_tree(*root, nodekey);
 
    long cmpres = nodekey - (*root)->key;
@@ -389,8 +396,8 @@ bool NumXTreeStoreNode(NumXTree_p *root, long key, IntOrP val)
    NumXTree_p handle, newnode;
 
    handle = NumXTreeCellAlloc();
-   handle->key = key - (key % NUMXTREEVALUES);
-   handle->vals[key % NUMXTREEVALUES] = val;
+   handle->key = key & ~(NUMXTREEVALUES - 1);
+   handle->vals[key & (NUMXTREEVALUES - 1)] = val;
 
    newnode = NumXTreeInsertNode(root, handle);
 
@@ -422,8 +429,8 @@ bool NumXTreeStoreVal(NumXTree_p *root, long key, void* val)
    NumXTree_p handle, newnode;
 
    handle = NumXTreeCellAlloc();
-   handle->key = key - (key % NUMXTREEVALUES);
-   handle->vals[key % NUMXTREEVALUES].p_val = val;
+   handle->key = key & ~(NUMXTREEVALUES - 1);
+   handle->vals[key & (NUMXTREEVALUES - 1)].p_val = val;
 
    // If node exists, newnode will be NULL and NumXTreeInsterVal will be called
    newnode = NumXTreeInsertNode(root, handle);
@@ -496,14 +503,19 @@ NumXTree_p NumXTreeExtractValue(NumXTree_p *root, long key)
       return NULL;
    }
 
-   long index = key % NUMXTREEVALUES;
+   long index = key & (NUMXTREEVALUES - 1);
    long nodekey = key - index;
 
    *root = splay_tree(*root, nodekey);
 
+   if (!(*root)->vals[index].p_val)
+   {
+      return NULL;
+   }
+
    if((nodekey-(*root)->key)==0)
    {
-      if (NumXTreeNodeWouldBeEmpty(*root, index))
+      if (NumXTreeNodeSingleElement(*root, index))
       {         
          if (!(*root)->lson)
          {
@@ -520,7 +532,7 @@ NumXTree_p NumXTreeExtractValue(NumXTree_p *root, long key)
          *root = x;
          return cell;
       }
-      /*Important notice: in this step, the value isn not
+      /*Important notice: in this step, the value is not
       extracted yet, but only when called in IntMapDelKey().
       This is so that the Caller of IntMapDelKey knows what
       value got deleted and NumXTreeExtractValue() does not
@@ -715,8 +727,8 @@ PStack_p NumXTreeLimitedTraverseInit(NumXTree_p root, long limit)
 //
 // Function: NumXTreeTraverseNext()
 //
-//   Given a stack describing a traversal state, return the next node
-//   and update the stack. Only remove the node when it has <=1 elements
+//   Given a stack describing a traversal state, return the next key/val
+//   pair and update the stack.
 //
 // Global Variables: -
 //
@@ -726,11 +738,7 @@ PStack_p NumXTreeLimitedTraverseInit(NumXTree_p root, long limit)
 
 NumXTree_p NumXTreeTraverseNext(PStack_p state)
 {
-   // printf("Stack as a string....");
-   // PStackPrintP(stdout, "%d", state);
-
    NumXTree_p handle, res;
-   // printf("NumXTree2TraverseNext()...");
 
    if(PStackEmpty(state))
    {
@@ -742,11 +750,11 @@ NumXTree_p NumXTreeTraverseNext(PStack_p state)
    {
       if(res->vals[i].p_val) 
       {  // val at index is not null
-         if (!NumXTreeNodeWouldBeEmpty(res, i))
-         {  // val at index is the only val in node
+         if (!NumXTreeNodeSingleElement(res, i))
+         {  // val at index is not the only val in node
             PStackPushP(state, res);
+            return res;
          }
-         return res;
       }
    }
 

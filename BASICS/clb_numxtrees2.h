@@ -84,9 +84,11 @@ typedef struct numxtreecell
 
 // TODO: remove the '2' eventually
 
+bool      NumXTreeNodeSingleElement(NumXTree_p node, int index);
 NumXTree_p NumXTree2CellAllocEmpty(void);
 void      NumXTree2Free(NumXTree_p junk);
 NumXTree_p NumXTree2InsertNode(NumXTree_p *root, NumXTree_p newnode);
+NumXTree_p NumXTreeInsertKeyValPair(NumXTree_p *root, long key, void* val);
 bool       NumXTree2StoreNode(NumXTree_p *root, long key, IntOrP val);
 NumXTree_p NumXTree2Find(NumXTree_p *root, long key);
 NumXTree_p NumXTree2ExtractValue(NumXTree_p *root, long key);

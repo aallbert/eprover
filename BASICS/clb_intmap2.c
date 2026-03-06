@@ -113,8 +113,6 @@ void IntMapFree(IntMap_p map)
 {
    assert(map);
 
-
-   printf("IntMapFree()...\n");
    switch(map->type)
    {
    case IMEmpty:
@@ -152,9 +150,9 @@ void* IntMapGetVal(IntMap_p map, long key)
       return NULL;
    }
 
-   printf("IntMapGetVal(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
-   map, key, map->type,map->entry_no,
-   map->max_key);
+   // printf("IntMapGetVal(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
+   // map, key, map->type,map->entry_no,
+   // map->max_key);
 
    switch(map->type)
    {
@@ -169,10 +167,10 @@ void* IntMapGetVal(IntMap_p map, long key)
    case IMTree:
          if(key <= map->max_key)
          {
-            NumXTree_p entry = NumXTreeFind(&(map->values.tree), key % NUMXTREEVALUES);
+            NumXTree_p entry = NumXTreeFind(&(map->values.tree), key);
             if(entry)
             {
-               res = entry->vals[key % NUMXTREEVALUES].p_val; 
+               res = entry->vals[key & (NUMXTREEVALUES - 1)].p_val; 
             }
          }
          break;
@@ -207,12 +205,10 @@ void** IntMapGetRef(IntMap_p map, long key)
    long index = key & (NUMXTREEVALUES - 1);
 
    assert(map);
-   
-   // printf("IntMapGetRef()...\n");
 
-   printf("IntMapGetRef(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
-   map, key, map->type,map->entry_no,
-   map->max_key);
+   // printf("IntMapGetRef(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
+   // map, key, map->type,map->entry_no,
+   // map->max_key);
 
    switch(map->type)
    {
@@ -253,6 +249,7 @@ void** IntMapGetRef(IntMap_p map, long key)
                creating a pair */
             if(!(*res)) 
             {
+               map->entry_no++;
                map->max_key=MAX(map->max_key, key);
                map->min_key=MIN(map->min_key, key);
             }
@@ -315,9 +312,9 @@ void IntMapAssign(IntMap_p map, long key, void* value)
 
 void* IntMapDelKey(IntMap_p map, long key)
 {
-   printf("IntMapDelKey(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
-   map, key, map->type,map->entry_no,
-   map->max_key);
+   // printf("IntMapDelKey(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
+   // map, key, map->type,map->entry_no,
+   // map->max_key);
 
    void* res = NULL;
    NumXTree_p  handle;
@@ -339,18 +336,18 @@ void* IntMapDelKey(IntMap_p map, long key)
          }
          break;
    case IMTree:
-         handle = NumXTreeExtractValue(&(map->values.tree), key);
+      handle = NumXTreeExtractValue(&(map->values.tree), key);
          if(handle)
          {
             map->entry_no--;
-            res = handle->vals[key % NUMXTREEVALUES].p_val;
-            if(!(NumXTreeNodeWouldBeEmpty(handle, key % NUMXTREEVALUES)))
+            res = handle->vals[key & (NUMXTREEVALUES - 1)].p_val;
+            if(!(NumXTreeNodeSingleElement(handle, key & (NUMXTREEVALUES - 1))))
             {
                // Setting the val NULL since it's not actually removed
                // in NumXTreeExtractValue()
-               handle->vals[key % NUMXTREEVALUES].p_val = NULL;
+               handle->vals[key & (NUMXTREEVALUES - 1)].p_val = NULL;
             }
-            if((handle->key + key % NUMXTREEVALUES) == map->max_key)
+            if((handle->key + (key & (NUMXTREEVALUES - 1))) == map->max_key)
             {
                if(map->values.tree)
                {
@@ -387,8 +384,6 @@ void* IntMapDelKey(IntMap_p map, long key)
 IntMapIter_p IntMapIterAlloc(IntMap_p map, long lower_key, long upper_key)
 {
    IntMapIter_p handle = IntMapIterCellAlloc();
-   
-   printf("IntMapIterAlloc()... handle->tree_iter at %p\n", handle->admin_data.tree_iter);
 
    handle->map = map;
    if(map)
@@ -433,7 +428,6 @@ IntMapIter_p IntMapIterAlloc(IntMap_p map, long lower_key, long upper_key)
 
 void IntMapIterFree(IntMapIter_p junk)
 {
-   printf("IntMapIterFree()...\n");
    assert(junk);
 
    if(junk->map)
