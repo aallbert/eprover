@@ -700,7 +700,9 @@ PStack_p NumXTreeLimitedTraverseInit(NumXTree_p root, long limit)
 
    while(root)
    {
-      if(root->key<limit)
+      /* limit is not super strict, key/val pairs exceeding the limit 
+       * are handled in the IntMap */
+      if(root->key < (limit & ~(NUMXTREEVALUES - 1)))
       {
          root = root->rson;
       }
@@ -736,7 +738,7 @@ PStack_p NumXTreeLimitedTraverseInit(NumXTree_p root, long limit)
 //
 /---------------------------------------------------------------------*/
 
-NumXTree_p NumXTreeTraverseNext(PStack_p state)
+NumXTree_p NumXTreeTraverseNext(PStack_p state, long* last_seen_key)
 {
    NumXTree_p handle, res;
 
@@ -746,15 +748,12 @@ NumXTree_p NumXTreeTraverseNext(PStack_p state)
    }
    res = PStackPopP(state);
 
-   for(int i = 0; i < NUMXTREEVALUES; i++) 
+   for(int i = ((*last_seen_key & (NUMXTREEVALUES - 1)) + 1) & (NUMXTREEVALUES - 1); i < NUMXTREEVALUES - 1; i++) 
    {
-      if(res->vals[i].p_val) 
+      if(res->vals[i].p_val)
       {  // val at index is not null
-         if (!NumXTreeNodeSingleElement(res, i))
-         {  // val at index is not the only val in node
-            PStackPushP(state, res);
-            return res;
-         }
+         PStackPushP(state, res);
+         return res;
       }
    }
 

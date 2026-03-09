@@ -59,10 +59,6 @@ static NumXTree_p add_new_tree_node(IntMap_p map, long key, void* val)
 {
    NumXTree_p res;
    assert(map->type == IMTree);
-
-   // handle = NumXTreeCellAlloc();
-   // handle->key = key - (key % NUMXTREEVALUES);
-   // handle->vals[key % NUMXTREEVALUES].p_val = val;
    res = NumXTreeInsertKeyValPair(&(map->values.tree), key, val);
    UNUSED(res); assert(res);
    map->entry_no++;
@@ -388,6 +384,7 @@ IntMapIter_p IntMapIterAlloc(IntMap_p map, long lower_key, long upper_key)
    handle->map = map;
    if(map)
    {
+      handle->last_seen_key = MAX(lower_key, map->min_key) - 1;
       handle->lower_key = MAX(lower_key, map->min_key);
       handle->upper_key = MIN(upper_key, map->max_key);
 

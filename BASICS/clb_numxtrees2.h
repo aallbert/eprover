@@ -100,7 +100,7 @@ long      NumXTree2MaxKey(NumXTree_p node);
 
 PStack_p NumXTree2LimitedTraverseInit(NumXTree_p root, long limit);
 
-NumXTree_p NumXTree2TraverseNext(PStack_p state);
+NumXTree_p NumXTree2TraverseNext(PStack_p state, long* last_seen_key);
 // AVL_TRAVERSE_DECLARATION(NumXTree, NumXTree_p)
 #define NumXTree2TraverseExit(stack) PStackFree(stack)
 

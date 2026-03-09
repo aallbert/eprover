@@ -97,6 +97,7 @@ typedef struct intmap_iter_cell
    IntMap_p map;
    long     lower_key;
    long     upper_key;
+   long     last_seen_key;
    union
    {
       bool      seen;      /* For IMSingle */
@@ -193,23 +194,25 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
          break;
    case IMTree:
          // printf("Case IMTree\n");
-         while((handle = NumXTreeTraverseNext(iter->admin_data.tree_iter)))
+         while((handle = NumXTreeTraverseNext(iter->admin_data.tree_iter, &(iter->last_seen_key))))
          {
             if(handle)
             {
-               if(handle->key > iter->upper_key)
+               if(handle->key + ((iter->last_seen_key + 1) & (NUMXTREEVALUES - 1)) > iter->upper_key)
                {
                   /* Overrun limit */
                   break;
                }
-               for(int i = 0; i < NUMXTREEVALUES; i++) 
+               for(int i = ((iter->last_seen_key & (NUMXTREEVALUES - 1)) + 1) & (NUMXTREEVALUES - 1);
+                  i < NUMXTREEVALUES; i++)
                {
-                  if(handle->vals[i].p_val) 
+                  iter->last_seen_key = handle->key + i;
+                  /* Searching for the next non-NULL value in the node*/
+                  if(handle->vals[i].p_val)
                   {
-                     /* Found real value, diminish it in stack */
+                     /* Found real value */
                      *key = handle->key + i;
                      res = handle->vals[i].p_val;
-                     handle->vals[i].p_val = NULL;
                      return res;
                   }
                }
