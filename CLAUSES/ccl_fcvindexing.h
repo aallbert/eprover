@@ -28,8 +28,13 @@ Changes
 
 #define CCL_FCVINDEXING
 
+#if USE_INTMAPTWO
+   #include <clb_intmap2.h>
+#else
+   #include <clb_intmap.h>
+#endif
+
 #include <ccl_freqvectors.h>
-#include <clb_intmap.h>
 
 /*---------------------------------------------------------------------*/
 /*                    Data type declarations                           */

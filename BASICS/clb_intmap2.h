@@ -31,20 +31,20 @@ Changes
 #include <clb_numxtrees2.h>
 #include <clb_pdrangearrays.h>
 
-#define NumXTreeTraverseNext          NumXTree2TraverseNext
-#define NumXTreeFind                  NumXTree2Find
-#define NumXTreeCellAllocEmpty        NumXTree2CellAllocEmpty
-#define NumXTreeFree                  NumXTree2Free
-#define NumXTreeInsertNode            NumXTree2InsertNode
-#define NumXTreeStoreNode             NumXTree2StoreNode
-#define NumXTreeExtractValue          NumXTree2ExtractValue
-#define NumXTreeExtractRoot           NumXTree2ExtractRoot
-#define NumXTreeDeleteEntry           NumXTree2DeleteEntry
-#define NumXTreeNodes                 NumXTree2Nodes
-#define NumXTreeMaxNode               NumXTree2MaxNode
-#define NumXTreeMaxKey                NumXTree2MaxKey
-#define NumXTreeLimitedTraverseInit   NumXTree2LimitedTraverseInit
-#define NumXTreeTraverseExit          NumXTree2TraverseExit
+// #define NumXTree2TraverseNext          NumXTree2TraverseNext
+// #define NumXTree2Find                  NumXTree2Find
+// #define NumXTree2CellAllocEmpty        NumXTree2CellAllocEmpty
+// #define NumXTree2Free                  NumXTree2Free
+// #define NumXTree2InsertNode            NumXTree2InsertNode
+// #define NumXTree2StoreNode             NumXTree2StoreNode
+// #define NumXTree2ExtractValue          NumXTree2ExtractValue
+// #define NumXTree2ExtractRoot           NumXTree2ExtractRoot
+// #define NumXTree2DeleteEntry           NumXTree2DeleteEntry
+// #define NumXTree2Nodes                 NumXTree2Nodes
+// #define NumXTree2MaxNode               NumXTree2MaxNode
+// #define NumXTree2MaxKey                NumXTree2MaxKey
+// #define NumXTree2LimitedTraverseInit   NumXTree2LimitedTraverseInit
+// #define NumXTree2TraverseExit          NumXTree2TraverseExit
 
 
 /*---------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ typedef struct intmap_cell
    union
    {
       void*        value;   /* For IMSingle */
-      NumXTree_p   tree;
+      NumXTree2_p   tree;
    }values;
 }IntMapCell, *IntMap_p;
 
@@ -169,7 +169,7 @@ void     IntMapDebugPrint(FILE* out, IntMap_p map);
 static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
 {
    void* res = NULL;
-   NumXTree_p handle;
+   NumXTree2_p handle;
 
    assert(iter);
    assert(key);
@@ -194,7 +194,7 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
          break;
    case IMTree:
          // printf("Case IMTree\n");
-         while((handle = NumXTreeTraverseNext(iter->admin_data.tree_iter, &(iter->last_seen_key))))
+         while((handle = NumXTree2TraverseNext(iter->admin_data.tree_iter, &(iter->last_seen_key))))
          {
             if(handle)
             {

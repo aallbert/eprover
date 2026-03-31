@@ -55,9 +55,9 @@ Changes
 //
 /----------------------------------------------------------------------*/
 
-static NumXTree_p add_new_tree_node(IntMap_p map, long key, void* val)
+static NumXTree2_p add_new_tree_node(IntMap_p map, long key, void* val)
 {
-   NumXTree_p res;
+   NumXTree2_p res;
    assert(map->type == IMTree);
    res = NumXTreeInsertKeyValPair(&(map->values.tree), key, val);
    UNUSED(res); assert(res);
@@ -115,7 +115,7 @@ void IntMapFree(IntMap_p map)
    case IMSingle:
          break;
    case IMTree:
-         NumXTreeFree(map->values.tree);
+         NumXTree2Free(map->values.tree);
          break;
    default:
          assert(false && "Unknown IntMap type.");
@@ -163,7 +163,7 @@ void* IntMapGetVal(IntMap_p map, long key)
    case IMTree:
          if(key <= map->max_key)
          {
-            NumXTree_p entry = NumXTreeFind(&(map->values.tree), key);
+            NumXTree2_p entry = NumXTree2Find(&(map->values.tree), key);
             if(entry)
             {
                res = entry->vals[key & (NUMXTREEVALUES - 1)].p_val; 
@@ -196,7 +196,7 @@ void** IntMapGetRef(IntMap_p map, long key)
 {
    void      **res = NULL;
    void      *val;
-   NumXTree_p handle;
+   NumXTree2_p handle;
    IntOrP tmp;
    long index = key & (NUMXTREEVALUES - 1);
 
@@ -227,7 +227,7 @@ void** IntMapGetRef(IntMap_p map, long key)
             val = map->values.value;
             map->values.tree = NULL;
             tmp.p_val = val;
-            NumXTreeStoreNode(&(map->values.tree), map->max_key, tmp);
+            NumXTree2StoreNode(&(map->values.tree), map->max_key, tmp);
             handle = add_new_tree_node(map, key, NULL);
             res = &(handle->vals[index].p_val);
             //  Rauswerfen, da Redundanz?
@@ -237,7 +237,7 @@ void** IntMapGetRef(IntMap_p map, long key)
          map->max_key = MAX(key, map->max_key);
          break;
    case IMTree:
-         handle = NumXTreeFind(&(map->values.tree), key);
+         handle = NumXTree2Find(&(map->values.tree), key);
          if(handle)
          {
             res = &(handle->vals[index].p_val);
@@ -313,7 +313,7 @@ void* IntMapDelKey(IntMap_p map, long key)
    // map->max_key);
 
    void* res = NULL;
-   NumXTree_p  handle;
+   NumXTree2_p  handle;
 
    assert(map);
 
@@ -332,7 +332,7 @@ void* IntMapDelKey(IntMap_p map, long key)
          }
          break;
    case IMTree:
-      handle = NumXTreeExtractValue(&(map->values.tree), key);
+      handle = NumXTree2ExtractValue(&(map->values.tree), key);
          if(handle)
          {
             map->entry_no--;
@@ -340,14 +340,14 @@ void* IntMapDelKey(IntMap_p map, long key)
             if(!(NumXTreeNodeSingleElement(handle, key & (NUMXTREEVALUES - 1))))
             {
                // Setting the val NULL since it's not actually removed
-               // in NumXTreeExtractValue()
+               // in NumXTree2ExtractValue()
                handle->vals[key & (NUMXTREEVALUES - 1)].p_val = NULL;
             }
             if((handle->key + (key & (NUMXTREEVALUES - 1))) == map->max_key)
             {
                if(map->values.tree)
                {
-                  map->max_key = NumXTreeMaxKey(NumXTreeMaxNode(map->values.tree));
+                  map->max_key = NumXTree2MaxKey(NumXTree2MaxNode(map->values.tree));
                }
                else
                {
@@ -401,7 +401,7 @@ IntMapIter_p IntMapIterAlloc(IntMap_p map, long lower_key, long upper_key)
             break;
       case IMTree:
             handle->admin_data.tree_iter =
-               NumXTreeLimitedTraverseInit(map->values.tree, lower_key);
+               NumXTree2LimitedTraverseInit(map->values.tree, lower_key);
             break;
       default:
             assert(false && "Unknown IntMap type.");

@@ -22,36 +22,37 @@ Changes
 
 -----------------------------------------------------------------------*/
 
-// #define NumXTreeTraverseNext          NumXTree2TraverseNext
-// #define NumXTreeFind                  NumXTree2Find
-// #define NumXTreeCellAllocEmpty        NumXTree2CellAllocEmpty
-// #define NumXTreeFree                  NumXTree2Free
-// #define NumXTreeInsertNode            NumXTree2InsertNode
-// #define NumXTreeStoreNode             NumXTree2StoreNode
-// #define NumXTreeFind                  NumXTree2Find
-// #define NumXTreeExtractValue          NumXTree2ExtractValue
-// #define NumXTreeExtractRoot           NumXTree2ExtractRoot
-// #define NumXTreeDeleteEntry           NumXTree2DeleteEntry
-// #define NumXTreeNodes                 NumXTree2Nodes
-// #define NumXTreeMaxNode               NumXTree2MaxNode
-// #define NumXTreeMaxKey                NumXTree2MaxKey
-// #define NumXTreeLimitedTraverseInit   NumXTree2LimitedTraverseInit
-// #define NumXTreeTraverseExit          NumXTree2TraverseExit
+#ifndef CLB_NUMXTREES2
 
-#ifndef CLB_NUMXTREES
-
-#define CLB_NUMXTREES
+#define CLB_NUMXTREES2
 
 #include <clb_dstrings.h>
 #include <clb_avlgeneric.h>
 #include <clb_pstacks.h>
 
+// #define NumXTree2TraverseNext          NumXTree2TraverseNext
+// #define NumXTree2Find                  NumXTree2Find
+// #define NumXTree2CellAllocEmpty        NumXTree2CellAllocEmpty
+// #define NumXTree2Free                  NumXTree2Free
+// #define NumXTree2InsertNode            NumXTree2InsertNode
+// #define NumXTree2StoreNode             NumXTree2StoreNode
+// #define NumXTree2Find                  NumXTree2Find
+// #define NumXTree2ExtractValue          NumXTree2ExtractValue
+// #define NumXTree2ExtractRoot           NumXTree2ExtractRoot
+// #define NumXTree2DeleteEntry           NumXTree2DeleteEntry
+// #define NumXTree2Nodes                 NumXTree2Nodes
+// #define NumXTree2MaxNode               NumXTree2MaxNode
+// #define NumXTree2MaxKey                NumXTree2MaxKey
+// #define NumXTree2LimitedTraverseInit   NumXTree2LimitedTraverseInit
+// #define NumXTree2TraverseExit          NumXTree2TraverseExit
+
 /*---------------------------------------------------------------------*/
 /*                    Data type declarations                           */
 /*---------------------------------------------------------------------*/
 
-
+#ifndef NUMXTREEVALUES
 #define NUMXTREEVALUES 4
+#endif
 
 /* General purpose data structure for indexing objects by a numerical
    key. Integer values are supported directly, for all other objects
@@ -60,48 +61,48 @@ Changes
    part of the data stucture and will not be touched by deallocating
    trees or tree nodes. */
 
-typedef struct numxtreecell
+typedef struct numxtree2cell
 {
    long                key;
    IntOrP              vals[NUMXTREEVALUES];
-   struct numxtreecell *lson;
-   struct numxtreecell *rson;
-}NumXTreeCell, *NumXTree_p;
+   struct numxtree2cell *lson;
+   struct numxtree2cell *rson;
+}NumXTree2Cell, *NumXTree2_p;
 
 
 /*---------------------------------------------------------------------*/
 /*                Exported Functions and Variables                     */
 /*---------------------------------------------------------------------*/
 
-#define NumXTreeCellAlloc() (NumXTreeCell*)SizeMalloc(sizeof(NumXTreeCell))
-#define NumXTreeCellFree(junk)        SizeFree(junk, sizeof(NumXTreeCell))
+#define NumXTree2CellAlloc() (NumXTree2Cell*)SizeMalloc(sizeof(NumXTree2Cell))
+#define NumXTree2CellFree(junk)        SizeFree(junk, sizeof(NumXTree2Cell))
 
 #ifdef CONSTANT_MEM_ESTIMATE
 #define NUMTREECELL_MEM 24
 #else
-#define NUMXTREECELL_MEM MEMSIZE(NumXTreeCell)
+#define NUMXTREECELL_MEM MEMSIZE(NumXTree2Cell)
 #endif
 
 // TODO: remove the '2' eventually
 
-bool      NumXTreeNodeSingleElement(NumXTree_p node, int index);
-NumXTree_p NumXTree2CellAllocEmpty(void);
-void      NumXTree2Free(NumXTree_p junk);
-NumXTree_p NumXTree2InsertNode(NumXTree_p *root, NumXTree_p newnode);
-NumXTree_p NumXTreeInsertKeyValPair(NumXTree_p *root, long key, void* val);
-bool       NumXTree2StoreNode(NumXTree_p *root, long key, IntOrP val);
-NumXTree_p NumXTree2Find(NumXTree_p *root, long key);
-NumXTree_p NumXTree2ExtractValue(NumXTree_p *root, long key);
-NumXTree_p NumXTree2ExtractRoot(NumXTree_p *root);
-bool      NumXTree2DeleteEntry(NumXTree_p *root, long key);
-long      NumXTree2Nodes(NumXTree_p root);
-NumXTree_p NumXTree2MaxNode(NumXTree_p root);
-long      NumXTree2MaxKey(NumXTree_p node);
+bool      NumXTreeNodeSingleElement(NumXTree2_p node, int index);
+NumXTree2_p NumXTree2CellAllocEmpty(void);
+void      NumXTree2Free(NumXTree2_p junk);
+NumXTree2_p NumXTree2InsertNode(NumXTree2_p *root, NumXTree2_p newnode);
+NumXTree2_p NumXTreeInsertKeyValPair(NumXTree2_p *root, long key, void* val);
+bool       NumXTree2StoreNode(NumXTree2_p *root, long key, IntOrP val);
+NumXTree2_p NumXTree2Find(NumXTree2_p *root, long key);
+NumXTree2_p NumXTree2ExtractValue(NumXTree2_p *root, long key);
+NumXTree2_p NumXTree2ExtractRoot(NumXTree2_p *root);
+bool      NumXTree2DeleteEntry(NumXTree2_p *root, long key);
+long      NumXTree2Nodes(NumXTree2_p root);
+NumXTree2_p NumXTree2MaxNode(NumXTree2_p root);
+long      NumXTree2MaxKey(NumXTree2_p node);
 
-PStack_p NumXTree2LimitedTraverseInit(NumXTree_p root, long limit);
+PStack_p NumXTree2LimitedTraverseInit(NumXTree2_p root, long limit);
 
-NumXTree_p NumXTree2TraverseNext(PStack_p state, long* last_seen_key);
-// AVL_TRAVERSE_DECLARATION(NumXTree, NumXTree_p)
+NumXTree2_p NumXTree2TraverseNext(PStack_p state, long* last_seen_key);
+// AVL_TRAVERSE_DECLARATION(NumXTree, NumXTree2_p)
 #define NumXTree2TraverseExit(stack) PStackFree(stack)
 
 
