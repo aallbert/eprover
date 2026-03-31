@@ -34,7 +34,7 @@ while IFS= read -r problem || [ -n "$problem" ]; do
     dir_name="${problem:0:3}"
     
     # Construct the relative path to the problem
-    problem_path="../../TPTP/TPTP-v9.2.1/Problems/${dir_name}/${problem}"
+    problem_path="../../some_problems/TPTP-problems/$problem"
 
     # Verify the problem file exists before running
     if [ ! -f "$problem_path" ]; then
