@@ -9,16 +9,20 @@ fi
 INPUT_FILE="$1"
 OUTPUT_FILE="benchmark_results_2.csv"
 
-# 2. Define your THREE program versions here
+# 2. Define your program versions here
 PROG_A="./PROVER/eprover"
-PROG_B="./INTMAP_16/eprover"
-PROG_C="./INTMAP_32/eprover" # Update this path to your third version
+PROG_B="./INTMAP_1/eprover"
+PROG_C="./INTMAP_2/eprover"
+PROG_D="./INTMAP_4/eprover"
+PROG_E="./INTMAP_8/eprover"
+PROG_F="./INTMAP_16/eprover"
+PROG_G="./INTMAP_32/eprover"
 
 # Define the arguments for the theorem prover
-ARGS="--auto --detsort-new --detsort-rw"
+ARGS="--auto --detsort-new --detsort-rw --soft-cpu-limit=300 --cpu-limit=350"
 
 # 3. Create/Clear the output file and add a header
-echo "Problem,Time_Version_A(s),Time_Version_B(s),Time_Version_C(s)" > "$OUTPUT_FILE"
+echo "Problem,Time_Version_Standard,Time_Version_1,Time_Version_2,Time_Version_4,Time_Version_8,Time_Version_16,Time_Version_32" > "$OUTPUT_FILE"
 
 # Tell the Bash built-in 'time' to only output the "real" time in seconds (%R)
 TIMEFORMAT="%R"
@@ -31,10 +35,7 @@ while IFS= read -r problem || [ -n "$problem" ]; do
         continue
     fi
 
-    # Extract the first 3 characters for the directory name (e.g., "ABC")
     dir_name="${problem:0:3}"
-    
-    # Construct the relative path to the problem
     problem_path="../../some_problems/TPTP-problems/$problem"
 
     # Verify the problem file exists before running
@@ -43,20 +44,35 @@ while IFS= read -r problem || [ -n "$problem" ]; do
         continue
     fi
 
-    echo "Benchmarking $problem..."
+    echo "Benchmarking $problem on 7 cores simultaneously..."
 
-    # Run Version A on Core 0
-    # 'taskset -c 0' forces the process to stay on the first CPU core
-    time_a=$( { time taskset -c 0 $PROG_A $ARGS "$problem_path" > /dev/null 2>&1; } 2>&1 )
+    # Run all 7 versions in the background (&) on separate cores (0 through 6).
+    # The '2> tmp_X.txt' captures the output of 'time' to a temporary file.
+    { time taskset -c 0 $PROG_A $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_a.txt &
+    { time taskset -c 1 $PROG_B $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_b.txt &
+    { time taskset -c 2 $PROG_C $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_c.txt &
+    { time taskset -c 3 $PROG_D $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_d.txt &
+    { time taskset -c 4 $PROG_E $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_e.txt &
+    { time taskset -c 5 $PROG_F $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_f.txt &
+    { time taskset -c 6 $PROG_G $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_g.txt &
 
-    # Run Version B on Core 0
-    time_b=$( { time taskset -c 0 $PROG_B $ARGS "$problem_path" > /dev/null 2>&1; } 2>&1 )
+    # WAIT pauses the script until all background processes (&) spawned above are finished
+    wait
 
-    # Run Version C on Core 0
-    time_c=$( { time taskset -c 0 $PROG_C $ARGS "$problem_path" > /dev/null 2>&1; } 2>&1 )
+    # Read the results from the temp files
+    time_a=$(cat tmp_a.txt)
+    time_b=$(cat tmp_b.txt)
+    time_c=$(cat tmp_c.txt)
+    time_d=$(cat tmp_d.txt)
+    time_e=$(cat tmp_e.txt)
+    time_f=$(cat tmp_f.txt)
+    time_g=$(cat tmp_g.txt)
 
-    # Append the results to the CSV output file
-    echo "$problem,$time_a,$time_b,$time_c" >> "$OUTPUT_FILE"
+    # Clean up the temporary files for the next loop
+    rm -f tmp_a.txt tmp_b.txt tmp_c.txt tmp_d.txt tmp_e.txt tmp_f.txt tmp_g.txt
+
+    # Append the results to the CSV output file (fixed missing time_c)
+    echo "$problem,$time_a,$time_b,$time_c,$time_d,$time_e,$time_f,$time_g" >> "$OUTPUT_FILE"
 
 done < "$INPUT_FILE"
 
