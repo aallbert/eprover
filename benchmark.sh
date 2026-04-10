@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 INPUT_FILE="$1"
-OUTPUT_FILE="benchmark_results_2.csv"
+OUTPUT_FILE="benchmark_results_p_28.csv"
 
 # 2. Define your program versions here
 PROG_A="./PROVER/eprover"
@@ -48,13 +48,13 @@ while IFS= read -r problem || [ -n "$problem" ]; do
 
     # Run all 7 versions in the background (&) on separate cores (0 through 6).
     # The '2> tmp_X.txt' captures the output of 'time' to a temporary file.
-    { time taskset -c 0 $PROG_A $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_a.txt &
-    { time taskset -c 1 $PROG_B $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_b.txt &
-    { time taskset -c 2 $PROG_C $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_c.txt &
-    { time taskset -c 3 $PROG_D $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_d.txt &
-    { time taskset -c 4 $PROG_E $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_e.txt &
-    { time taskset -c 5 $PROG_F $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_f.txt &
-    { time taskset -c 6 $PROG_G $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_g.txt &
+    { time taskset -c 32-63 $PROG_A $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_a.txt &
+    { time taskset -c 32-63 $PROG_B $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_b.txt &
+    { time taskset -c 32-63 $PROG_C $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_c.txt &
+    { time taskset -c 32-63 $PROG_D $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_d.txt &
+    { time taskset -c 32-63 $PROG_E $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_e.txt &
+    { time taskset -c 32-63 $PROG_F $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_f.txt &
+    { time taskset -c 32-63 $PROG_G $ARGS "$problem_path" > /dev/null 2>&1; } 2> tmp_g.txt &
 
     # WAIT pauses the script until all background processes (&) spawned above are finished
     wait
@@ -77,3 +77,4 @@ while IFS= read -r problem || [ -n "$problem" ]; do
 done < "$INPUT_FILE"
 
 echo "Done! Results are saved in $OUTPUT_FILE"
+
