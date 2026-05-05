@@ -10,13 +10,13 @@ INPUT_FILE="$1"
 OUTPUT_FILE="benchmark_size_all.csv"
 
 # 2. Define your program versions here
-PROG_A="./PROVER/eprover"
-PROG_B="./INTMAP_1/eprover"
-PROG_C="./INTMAP_2/eprover"
-PROG_D="./INTMAP_4/eprover"
-PROG_E="./INTMAP_8/eprover"
-PROG_F="./INTMAP_16/eprover"
-PROG_G="./INTMAP_32/eprover"
+PROG_A="../PROVER/eprover"
+PROG_B="../INTMAP_1/eprover"
+PROG_C="../INTMAP_2/eprover"
+PROG_D="../INTMAP_4/eprover"
+PROG_E="../INTMAP_8/eprover"
+PROG_F="../INTMAP_16/eprover"
+PROG_G="../INTMAP_32/eprover"
 
 # Define the arguments for the theorem prover
 ARGS="--auto --detsort-new --detsort-rw --soft-cpu-limit=300 --cpu-limit=350"
@@ -46,7 +46,7 @@ while IFS= read -r problem || [ -n "$problem" ]; do
     fi
 
     dir_name="${problem:0:3}"
-    problem_path="../../some_problems/TPTP-problems/$problem"
+    problem_path="../../../some_problems/TPTP-problems/$problem"
 
     # Verify the problem file exists before running
     if [ ! -f "$problem_path" ]; then
