@@ -146,10 +146,6 @@ void* IntMapGetVal(IntMap_p map, long key)
       return NULL;
    }
 
-   // printf("IntMapGetVal(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
-   // map, key, map->type,map->entry_no,
-   // map->max_key);
-
    switch(map->type)
    {
    case IMEmpty:
@@ -202,10 +198,6 @@ void** IntMapGetRef(IntMap_p map, long key)
 
    assert(map);
 
-   // printf("IntMapGetRef(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
-   // map, key, map->type,map->entry_no,
-   // map->max_key);
-
    switch(map->type)
    {
    case IMEmpty:
@@ -230,7 +222,6 @@ void** IntMapGetRef(IntMap_p map, long key)
             NumXTree2StoreNode(&(map->values.tree), map->max_key, tmp);
             handle = add_new_tree_node(map, key, NULL);
             res = &(handle->vals[index].p_val);
-            //  Rauswerfen, da Redundanz?
             map->entry_no = 2;
          }
          map->min_key = MIN(map->min_key, key);
@@ -308,9 +299,6 @@ void IntMapAssign(IntMap_p map, long key, void* value)
 
 void* IntMapDelKey(IntMap_p map, long key)
 {
-   // printf("IntMapDelKey(%p,%ld) type %d, entries=%ld, maxkey=%ld...\n",
-   // map, key, map->type,map->entry_no,
-   // map->max_key);
 
    void* res = NULL;
    NumXTree2_p  handle;

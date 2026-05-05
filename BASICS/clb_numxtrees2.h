@@ -30,22 +30,6 @@ Changes
 #include <clb_avlgeneric.h>
 #include <clb_pstacks.h>
 
-// #define NumXTree2TraverseNext          NumXTree2TraverseNext
-// #define NumXTree2Find                  NumXTree2Find
-// #define NumXTree2CellAllocEmpty        NumXTree2CellAllocEmpty
-// #define NumXTree2Free                  NumXTree2Free
-// #define NumXTree2InsertNode            NumXTree2InsertNode
-// #define NumXTree2StoreNode             NumXTree2StoreNode
-// #define NumXTree2Find                  NumXTree2Find
-// #define NumXTree2ExtractValue          NumXTree2ExtractValue
-// #define NumXTree2ExtractRoot           NumXTree2ExtractRoot
-// #define NumXTree2DeleteEntry           NumXTree2DeleteEntry
-// #define NumXTree2Nodes                 NumXTree2Nodes
-// #define NumXTree2MaxNode               NumXTree2MaxNode
-// #define NumXTree2MaxKey                NumXTree2MaxKey
-// #define NumXTree2LimitedTraverseInit   NumXTree2LimitedTraverseInit
-// #define NumXTree2TraverseExit          NumXTree2TraverseExit
-
 /*---------------------------------------------------------------------*/
 /*                    Data type declarations                           */
 /*---------------------------------------------------------------------*/

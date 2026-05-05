@@ -24,21 +24,6 @@ Changes (vastly incomplete, see CVS log)
 
 #include "clb_numxtrees2.h"
 
-// #define NumXTree2TraverseNext          NumXTree2TraverseNext
-// #define NumXTree2Find                  NumXTree2Find
-// #define NumXTree2CellAllocEmpty        NumXTree2CellAllocEmpty
-// #define NumXTree2Free                  NumXTree2Free
-// #define NumXTree2InsertNode            NumXTree2InsertNode
-// #define NumXTree2StoreNode             NumXTree2StoreNode
-// #define NumXTree2ExtractValue          NumXTree2ExtractValue
-// #define NumXTree2ExtractRoot           NumXTree2ExtractRoot
-// #define NumXTree2DeleteEntry           NumXTree2DeleteEntry
-// #define NumXTree2Nodes                 NumXTree2Nodes
-// #define NumXTree2MaxNode               NumXTree2MaxNode
-// #define NumXTree2MaxKey                NumXTree2MaxKey
-// #define NumXTree2LimitedTraverseInit   NumXTree2LimitedTraverseInit
-// #define NumXTree2TraverseExit          NumXTree2TraverseExit
-
 /*---------------------------------------------------------------------*/
 /*                        Global Variables                             */
 /*---------------------------------------------------------------------*/
@@ -410,44 +395,6 @@ bool NumXTree2StoreNode(NumXTree2_p *root, long key, IntOrP val)
 }
 
 
-// /*-----------------------------------------------------------------------
-// //
-// // Function: NumXTreeStoreVal()
-// //
-// //   Insert a cell associating key with val1 and val2 into the
-// //   tree. Return false if an entry for this key exists, true
-// //   otherwise.
-// //
-// // Global Variables: -
-// //
-// // Side Effects    : Changes tree
-// //
-// /----------------------------------------------------------------------*/
-
-// bool NumXTreeStoreVal(NumXTree2_p *root, long key, void* val)
-// {
-//    NumXTree2_p handle, newnode;
-
-//    handle = NumXTree2CellAlloc();
-//    handle->key = key & ~(NUMXTREEVALUES - 1);
-//    handle->vals[key & (NUMXTREEVALUES - 1)].p_val = val;
-
-//    // If node exists, newnode will be NULL and NumXTreeInsterVal will be called
-//    newnode = NumXTree2InsertNode(root, handle);
-
-//    if (!newnode) 
-//    {
-//       NumXTreeInsertKeyValPair(root, key, val);
-//       return true;
-//    }
-//    else 
-//    {
-//       NumXTree2CellFree(handle);
-//       return false;
-//    }
-// }
-
-
 /*-----------------------------------------------------------------------
 //
 // Function: NumXTree2Find()
@@ -483,8 +430,10 @@ NumXTree2_p NumXTree2Find(NumXTree2_p *root, long key)
 //
 // Function: NumXTree2ExtractValue()
 //
-//   Find the entry with key key, remove it from the tree and return the
-//   pointer to the node containing it. If the node containing it is
+//   Find the entry with key, rebalance the tree and return the pointer
+//   to the node that shall be removed. 
+//   ! This function alone does not remove the node from the tree !
+//   If the node containing it is
 //   empty, remove the node from the tree and rebalance the tree.
 //   Return NULL if no matching element exists.
 //
@@ -526,7 +475,6 @@ NumXTree2_p NumXTree2ExtractValue(NumXTree2_p *root, long key)
             x = splay_tree((*root)->lson, nodekey);
             x->rson = (*root)->rson;
          }
-         // necessary bc of splay
          cell = *root;
          cell->lson = cell->rson = NULL;
          *root = x;
@@ -539,32 +487,8 @@ NumXTree2_p NumXTree2ExtractValue(NumXTree2_p *root, long key)
       have to clone the node*/
       return *root;
    }
-   // node with nodekey does not exist
    return NULL;
 }
-
-
-// /*-----------------------------------------------------------------------
-// //
-// // Function: NumXTree2ExtractRoot()
-// //
-// //   Extract the NumXTree2Cell at the root of the tree and return it (or
-// //   NULL if the tree is empty).
-// //
-// // Global Variables:
-// //
-// // Side Effects    :
-// //
-// /----------------------------------------------------------------------*/
-// TODO: probably delete since it's not needed
-// NumXTree2_p NumXTree2ExtractRoot(NumXTree2_p *root)
-// {
-//    if(*root)
-//    {
-//       return NumXTree2ExtractValue(root, (*root)->key);
-//    }
-//    return NULL;
-// }
 
 
 /*-----------------------------------------------------------------------

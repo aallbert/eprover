@@ -184,7 +184,6 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
    case IMEmpty:
          break;
    case IMSingle:
-         //printf("Case IMSingle\n");
          if(!iter->admin_data.seen)
          {
             iter->admin_data.seen = true;
@@ -193,7 +192,6 @@ static inline void* IntMapIterNext(IntMapIter_p iter, long *key)
          }
          break;
    case IMTree:
-         // printf("Case IMTree\n");
          while((handle = NumXTree2TraverseNext(iter->admin_data.tree_iter, &(iter->last_seen_key))))
          {
             if(handle)
